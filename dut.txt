@@ -12,15 +12,17 @@ cat <<EOF > docker-compose.yml
 version: '3.8'
 
 services:
+
   wings:
     image: ghcr.io/pterodactyl/wings:v1.11.13
+    env_file:
+      - .env
     restart: always
     networks:
+      - pterodactyl
       - wings0
     ports:
-      - "8080:8080"
       - "2022:2022"
-      - "443:443"
     tty: true
     environment:
       TZ: "UTC"
@@ -28,18 +30,13 @@ services:
       WINGS_GID: 988
       WINGS_USERNAME: pterodactyl
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/lib/docker/containers/:/var/lib/docker/containers/
-      - /etc/pterodactyl/:/etc/pterodactyl/
-      - /var/lib/pterodactyl/:/var/lib/pterodactyl/
-      - /var/log/pterodactyl/:/var/log/pterodactyl/
-      - /tmp/pterodactyl/:/tmp/pterodactyl/
-      - /etc/ssl/certs:/etc/ssl/certs:ro
-      # Optional: If upgrading from older daemon versions
-      # - /srv/daemon-data/:/srv/daemon-data/
-      # Optional: Required for SSL if using Let's Encrypt
-      # - /etc/letsencrypt/:/etc/letsencrypt/
-
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/lib/docker/containers/:/var/lib/docker/containers/"
+      - "/tmp/pterodactyl/:/tmp/pterodactyl/"
+      - "/etc/ssl/certs:/etc/ssl/certs:ro"
+      - "${DATA_DIR}/wings/etc/:/etc/pterodactyl/"
+      - "${DATA_DIR}/wings/logs:/var/log/pterodactyl/"
+      - "${SERVERS_DATA_FULL_PATH}:${SERVERS_DATA_FULL_PATH}"
 networks:
   wings0:
     name: wings0
