@@ -23,6 +23,8 @@ services:
       - wings0
     ports:
       - "2022:2022"
+      - "443:443"
+      - "8080:8080"
     tty: true
     environment:
       TZ: "UTC"
